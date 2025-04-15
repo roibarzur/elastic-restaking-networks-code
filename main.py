@@ -267,7 +267,7 @@ def search_for_minimum_stake_wrapper(info: RestakingNetworkInfo, restaking_degre
     return restaking_degree, robustness_threshold, search_for_minimum_stake(info, robustness_threshold, loss_threshold, max_stake_multiplier, symmetric_network=symmetric_network)
 
 
-def build_graph_y_axis_stake(name: str, info: RestakingNetworkInfo, restaking_degrees: np.ndarray,
+def build_graph_y_axis_stake(filename: str, info: RestakingNetworkInfo, restaking_degrees: np.ndarray,
                              robustness_thresholds: np.ndarray, loss_threshold: float = 0, max_stake_multiplier: float = 2,
                              symmetric_network: bool = False, results_folder: str = 'results') -> None:
     results = []
@@ -283,7 +283,7 @@ def build_graph_y_axis_stake(name: str, info: RestakingNetworkInfo, restaking_de
 
     df = pd.DataFrame(results, columns=["restaking_degree", "robustness_threshold", "min_stake"])
     print(df)
-    df.to_csv(f"{results_folder}/{name}.csv", index=False)
+    df.to_csv(f"{results_folder}/{filename}.csv", index=False)
     
     plt.figure()
     
@@ -301,7 +301,7 @@ def build_graph_y_axis_stake(name: str, info: RestakingNetworkInfo, restaking_de
 
     ax.grid(color='gray', linewidth=0.5, alpha=0.5)
 
-    plt.savefig(f"{results_folder}/{name}.png", dpi=600, bbox_inches='tight')
+    plt.savefig(f"{results_folder}/{filename}.png", dpi=600, bbox_inches='tight')
     # plt.show()
     plt.close()
 
@@ -309,7 +309,7 @@ def search_for_minimum_loss_wrapper(info: RestakingNetworkInfo, robustness_thres
     info = dataclasses.replace(info, validator_stake=validator_stake)
     return validator_stake, robustness_threshold, search_for_minimum_loss(info, robustness_threshold, max_loss_threshold, symmetric_network=symmetric_network)
 
-def build_graph_y_axis_loss(name: str, info: RestakingNetworkInfo, robustness_thresholds: np.ndarray,
+def build_graph_y_axis_loss(filename: str, info: RestakingNetworkInfo, robustness_thresholds: np.ndarray,
                             validator_stakes: np.ndarray, max_loss_threshold: float, symmetric_network: bool = False,
                             results_folder: str = 'results') -> None:
     results = []
@@ -325,7 +325,7 @@ def build_graph_y_axis_loss(name: str, info: RestakingNetworkInfo, robustness_th
 
     df = pd.DataFrame(results, columns=["validator_stake", "robustness_threshold", "loss_threshold"])
     print(df)
-    df.to_csv(f"{results_folder}/{name}.csv", index=False)
+    df.to_csv(f"{results_folder}/{filename}.csv", index=False)
     
     plt.figure()
     
@@ -343,7 +343,7 @@ def build_graph_y_axis_loss(name: str, info: RestakingNetworkInfo, robustness_th
 
     ax.grid(color='gray', linewidth=0.5, alpha=0.5)
 
-    plt.savefig(f"{results_folder}/{name}.png", dpi=600, bbox_inches='tight')
+    plt.savefig(f"{results_folder}/{filename}.png", dpi=600, bbox_inches='tight')
     # plt.show()
     plt.close()
 
@@ -367,7 +367,7 @@ def figure3_wrapper(info: RestakingNetworkInfo, service_attack_threshold: float,
     return service_attack_threshold, restaking_degree, search_for_minimum_stake(info, robustness_threshold=0, loss_threshold=0, max_stake_multiplier=2, symmetric_network=True)
 
 
-def build_figure3_graph(name: str, info: RestakingNetworkInfo) -> None:
+def build_figure3_graph(filename: str, info: RestakingNetworkInfo) -> None:
     restaking_degrees = [float(rd) for rd in np.arange(1, info.num_services, 0.01)]
     service_attack_thresholds = [1/3, 1/2]
 
@@ -394,7 +394,7 @@ def build_figure3_graph(name: str, info: RestakingNetworkInfo) -> None:
         threshold: f"min_stake_threshold_{threshold:.2f}"
         for threshold in service_attack_thresholds
     })
-    csv_df.to_csv(f"{results_folder_for_figures}/{name}.csv", index=False)
+    csv_df.to_csv(f"{results_folder_for_figures}/{filename}.csv", index=False)
 
     plt.figure()
     
@@ -412,7 +412,7 @@ def build_figure3_graph(name: str, info: RestakingNetworkInfo) -> None:
 
     ax.grid(color='gray', linewidth=0.5, alpha=0.5)
 
-    plt.savefig(f"{results_folder_for_figures}/{name}.png", dpi=600, bbox_inches='tight')
+    plt.savefig(f"{results_folder_for_figures}/{filename}.png", dpi=600, bbox_inches='tight')
     plt.close()
 
 
@@ -433,10 +433,10 @@ def figure3() -> None:
 
 def figure4_stake_wrapper(info: RestakingNetworkInfo, restaking_degree: float, robustness_threshold: float, budget: float) -> tuple[float, float, float]:
     info = dataclasses.replace(info, restaking_degree=restaking_degree)
-    return restaking_degree, robustness_threshold, search_for_minimum_stake(info, robustness_threshold=robustness_threshold, loss_threshold=budget, max_stake_multiplier=2*(1+budget)*(info.base_service[0]/info.num_services if info.base_service is not None else 1), symmetric_network=True)
+    return restaking_degree, robustness_threshold, search_for_minimum_stake(info, robustness_threshold=robustness_threshold, loss_threshold=budget, max_stake_multiplier=3.33, symmetric_network=True)
 
 
-def build_figure4_stake_graph(name: str, info: RestakingNetworkInfo, budget: float) -> None:
+def build_figure4_stake_graph(filename: str, info: RestakingNetworkInfo, budget: float) -> None:
     restaking_degrees = [float(rd) for rd in np.arange(1, info.num_services, 0.01)]
     robustness_thresholds = [float(rt) for rt in np.linspace(0, 1 - 1/info.num_services, info.num_services)]
 
@@ -463,12 +463,12 @@ def build_figure4_stake_graph(name: str, info: RestakingNetworkInfo, budget: flo
         threshold: f"min_stake_threshold_{threshold:.2f}"
         for threshold in robustness_thresholds
     })
-    csv_df.to_csv(f"{results_folder_for_figures}/{name}.csv", index=False)
+    csv_df.to_csv(f"{results_folder_for_figures}/{filename}.csv", index=False)
 
     plt.figure()
     
     ax = sns.lineplot(x="restaking_degree", y="min_stake", data=df, hue="robustness_threshold", palette="deep", alpha=0.8)
-    ax.set_xticklabels([f'{float(x.get_text()):.2f}' for x in ax.get_xticklabels()])
+    ax.set_xticklabels([str(float(x.get_text().replace('\u2212', '-'))).format('.2f') for x in ax.get_xticklabels()])
     
     legend = ax.legend(title="Robustness Threshold")
     for text in legend.get_texts():
@@ -477,17 +477,17 @@ def build_figure4_stake_graph(name: str, info: RestakingNetworkInfo, budget: flo
     ax.set_xlabel("Restaking Degree")
     ax.set_ylabel("Minimum Stake")
 
-    ax.axhline(y=get_start_max_stake(info, multiplier=2*(1+budget)*(info.base_service[0]/info.num_services if info.base_service is not None else 1)), color='k', linestyle='--', label="Max Stake")
+    ax.axhline(y=get_start_max_stake(info, multiplier=3.33), color='k', linestyle='--', label="Max Stake")
 
     ax.grid(color='gray', linewidth=0.5, alpha=0.5)
 
-    plt.savefig(f"{results_folder_for_figures}/{name}.png", dpi=600, bbox_inches='tight')
+    plt.savefig(f"{results_folder_for_figures}/{filename}.png", dpi=600, bbox_inches='tight')
     plt.close()
 
 
 def figure4() -> None:
-    n=6
-    for budget in [0, 1]:
+    n=15
+    for budget in [0, 1, 2]:
         for base_service in [None, (10, 1/3)]:
             info = RestakingNetworkInfo(
                 num_validators=n,
@@ -497,30 +497,96 @@ def figure4() -> None:
                 base_service=base_service
             )
             build_figure4_stake_graph(f"figure4_y_stake_budget_{budget}{'' if base_service is None else f'_base_service_{base_service[0]}_{base_service[1]:.2f}'}", info, budget)
-    
+
 
 ######################################
 # Figure 5
 ######################################
 
 
-def figure5_budget_wrapper(info: RestakingNetworkInfo, restaking_degree: float, robustness_threshold: float, name: str) -> tuple[float, float, str, float]:
+def figure5_budget_wrapper(info: RestakingNetworkInfo, restaking_degree: float, robustness_threshold: float) -> tuple[float, float, float]:
+    info = dataclasses.replace(info, restaking_degree=restaking_degree)
+    return restaking_degree, robustness_threshold, search_for_minimum_loss(info, robustness_threshold=robustness_threshold, max_loss_threshold=info.validator_stake * info.num_validators / 2, symmetric_network=True)
+
+
+def build_figure5_graph(filename: str, info: RestakingNetworkInfo, restaking_degrees: List[float]) -> None:
+    n = info.num_services
+    robustness_thresholds = [float(rt) for rt in np.linspace(0, 1 - 1/n, n)]
+    
+    results = []
+    with ProcessPoolExecutor() as executor:
+        futures = [
+            executor.submit(figure5_budget_wrapper, info, restaking_degree, robustness_threshold)
+            for robustness_threshold in robustness_thresholds
+            for restaking_degree in restaking_degrees
+        ]
+        
+        for future in futures:
+            results.append(future.result())
+
+    df = pd.DataFrame(results, columns=["restaking_degree", "robustness_threshold", "min_budget"])
+    csv_df = df.pivot(
+        index='robustness_threshold',
+        columns='restaking_degree',
+        values='min_budget'
+    ).reset_index()
+    
+    csv_df.columns.name = None
+    csv_df = csv_df.rename(columns={
+        rd: f"min_budget_{rd:.2f}"
+        for rd in restaking_degrees
+    })
+    csv_df.to_csv(f"{results_folder_for_figures}/{filename}.csv", index=False)
+
+    plt.figure()
+    
+    ax = sns.lineplot(x="robustness_threshold", y="min_budget", data=df, hue="restaking_degree", palette="deep", alpha=0.8)
+    
+    ax.legend(title="Restaking Degree")
+
+    ax.set_xlabel("Byzantine Services")
+    ax.set_ylabel("Minimum Budget")
+
+    ax.grid(color='gray', linewidth=0.5, alpha=0.5)
+
+    plt.savefig(f"{results_folder_for_figures}/{filename}.png", dpi=600, bbox_inches='tight')
+    plt.close()
+
+
+def figure5() -> None:
+    info = RestakingNetworkInfo(
+        num_validators=15,
+        num_services=15,
+        validator_stake=10,
+        service_attack_reward=1,
+        service_attack_threshold=1/3,
+    )
+    restaking_degrees = [float(rd) for rd in np.arange(1, 3.25, 0.25)]
+    build_figure5_graph(f"figure5", info, restaking_degrees)
+
+
+######################################
+# Figure 6
+######################################
+
+
+def figure6_budget_wrapper(info: RestakingNetworkInfo, restaking_degree: float, robustness_threshold: float, name: str) -> tuple[float, float, str, float]:
     info = dataclasses.replace(info, restaking_degree=restaking_degree)
     return restaking_degree, robustness_threshold, name, search_for_minimum_loss(info, robustness_threshold=robustness_threshold, max_loss_threshold=info.validator_stake * info.num_validators / 2, symmetric_network=True)
 
 
-def build_figure5_graph(name: str, infos: List[RestakingNetworkInfo]) -> None:
-    n = infos[2].num_services
+def build_figure6_graph(filename: str, infos: List[Tuple[str, RestakingNetworkInfo]]) -> None:
+    n = infos[2][1].num_services
     restaking_degrees = [float(rd) for rd in np.arange(1, n, 0.01)]
     robustness_thresholds = [float(rt) for rt in np.linspace(0, 1 - 1/n, n)]
 
     results = []
     with ProcessPoolExecutor() as executor:
         futures = [
-            executor.submit(figure5_budget_wrapper, network_info, restaking_degree, robustness_threshold, name)
+            executor.submit(figure6_budget_wrapper, network_info, restaking_degree, robustness_threshold, name)
             for robustness_threshold in robustness_thresholds
             for restaking_degree in restaking_degrees
-            for (name, network_info) in [("base_only", infos[0]), ("no_base", infos[1]), ("total", infos[2])]
+            for (name, network_info) in infos
         ]
         
         for future in futures:
@@ -539,28 +605,28 @@ def build_figure5_graph(name: str, infos: List[RestakingNetworkInfo]) -> None:
         t: f"min_budget_{t}"
         for t in ["base_only", "no_base", "total"]
     })
-    csv_df.to_csv(f"{results_folder_for_figures}/{name}.csv", index=False)
+    csv_df.to_csv(f"{results_folder_for_figures}/{filename}.csv", index=False)
 
     plt.figure()
     
     ax = sns.lineplot(x="robustness_threshold", y="min_budget", data=df, hue="type", palette="deep", alpha=0.8)
     
-    legend = ax.legend(title="Type")
+    ax.legend(title="Type")
 
-    ax.set_xlabel("Robustness Threshold")
+    ax.set_xlabel("Byzantine Services")
     ax.set_ylabel("Minimum Budget")
 
     ax.grid(color='gray', linewidth=0.5, alpha=0.5)
 
-    plt.savefig(f"{results_folder_for_figures}/{name}.png", dpi=600, bbox_inches='tight')
+    plt.savefig(f"{results_folder_for_figures}/{filename}.png", dpi=600, bbox_inches='tight')
     plt.close()
 
 
-def figure5() -> None:
+def figure6() -> None:
     info = RestakingNetworkInfo(
-        num_validators=6,
-        num_services=6,
-        validator_stake=10,
+        num_validators=15,
+        num_services=15,
+        validator_stake=7.8,
         service_attack_reward=1,
         service_attack_threshold=1/3,
         base_service=(10, 1/3)
@@ -571,34 +637,34 @@ def figure5() -> None:
         num_services=1,
         service_attack_reward=info.base_service[0],
         service_attack_threshold=info.base_service[1],
-        validator_stake=5.5
+        validator_stake=2.4
     )
     no_base_info = dataclasses.replace(
         info,
         base_service=None,
-        validator_stake=4.5
+        validator_stake=5.4
     )
-    build_figure5_graph(f"figure5", [base_only_info, no_base_info, info])
+    build_figure6_graph(f"figure6", [("base_only", base_only_info), ("no_base", no_base_info), ("total", info)])
 
 
 ######################################
-# Figure 6
+# Figure 7
 ######################################
 
 
-def figure6_stake_wrapper(info: RestakingNetworkInfo, restaking_degree: float, robustness_threshold: float, budget: float, use_milp: bool) -> tuple[float, float, float]:
+def figure7_stake_wrapper(info: RestakingNetworkInfo, restaking_degree: float, robustness_threshold: float, budget: float, use_milp: bool) -> tuple[float, float, float]:
     info = dataclasses.replace(info, restaking_degree=restaking_degree)
-    return restaking_degree, robustness_threshold, use_milp, search_for_minimum_stake(info, robustness_threshold=robustness_threshold, loss_threshold=budget, max_stake_multiplier=2*(1+budget), symmetric_network=not use_milp)
+    return restaking_degree, robustness_threshold, use_milp, search_for_minimum_stake(info, robustness_threshold=robustness_threshold, loss_threshold=budget, max_stake_multiplier=4, symmetric_network=not use_milp)
 
 
-def build_figure6_stake_graph(name: str, info: RestakingNetworkInfo, budget: float) -> None:
+def build_figure7_stake_graph(filename: str, info: RestakingNetworkInfo, budget: float) -> None:
     restaking_degrees = [float(rd) for rd in np.arange(1, info.num_services, 0.01)]
     robustness_thresholds = [float(rt) for rt in np.linspace(0, 1 - 1/info.num_services, info.num_services)]
 
     results = []
     with ProcessPoolExecutor() as executor:
         futures = [
-            executor.submit(figure6_stake_wrapper, info, restaking_degree, robustness_threshold, budget, use_milp)
+            executor.submit(figure7_stake_wrapper, info, restaking_degree, robustness_threshold, budget, use_milp)
             for use_milp in [True, False]
             for robustness_threshold in robustness_thresholds
             for restaking_degree in restaking_degrees
@@ -626,7 +692,7 @@ def build_figure6_stake_graph(name: str, info: RestakingNetworkInfo, budget: flo
         for use_milp in [True, False]
         for threshold in robustness_thresholds
     })
-    csv_df.to_csv(f"{results_folder_for_figures}/{name}.csv", index=False)
+    csv_df.to_csv(f"{results_folder_for_figures}/{filename}.csv", index=False)
 
     plt.figure()
     
@@ -638,45 +704,49 @@ def build_figure6_stake_graph(name: str, info: RestakingNetworkInfo, budget: flo
     ax.set_xlabel("Restaking Degree")
     ax.set_ylabel("Minimum Stake")
 
-    ax.axhline(y=get_start_max_stake(info, multiplier=2*(1+budget)*(info.base_service[0]/info.num_services if info.base_service is not None else 1)), color='k', linestyle='--', label="Max Stake")
+    ax.axhline(y=get_start_max_stake(info, multiplier=4), color='k', linestyle='--', label="Max Stake")
 
     ax.grid(color='gray', linewidth=0.5, alpha=0.5)
 
-    plt.savefig(f"{results_folder_for_figures}/{name}.png", dpi=600, bbox_inches='tight')
+    plt.savefig(f"{results_folder_for_figures}/{filename}.png", dpi=600, bbox_inches='tight')
     plt.close()
 
 
-def figure6() -> None:
+def figure7() -> None:
     n=3
-    for budget in [0, 1]:
+    for budget in [0, 1, 2]:
         info = RestakingNetworkInfo(
             num_validators=n,
             num_services=n,
             service_attack_reward=1,
             service_attack_threshold=1/3
         )
-        build_figure6_stake_graph(f"figure6_budget_{budget}", info, budget)
+        build_figure7_stake_graph(f"figure7_budget_{budget}", info, budget)
 
 
 ######################################
-# Figure 7
+# Figure 8
 ######################################
 
 
-def figure7_stake_wrapper(info: RestakingNetworkInfo, restaking_degree: float, robustness_threshold: float, budget: float) -> tuple[float, float, float]:
+def figure8_stake_wrapper(info: RestakingNetworkInfo, restaking_degree: float, robustness_threshold: float, budget: float) -> tuple[float, float, float]:
     info = dataclasses.replace(info, restaking_degree=restaking_degree)
-    return restaking_degree, robustness_threshold, search_for_minimum_stake(info, robustness_threshold=robustness_threshold, loss_threshold=budget, max_stake_multiplier=2*(1+budget)*info.base_service[0]/info.num_services, symmetric_network=info.base_service[1] == info.service_attack_threshold)
+    return restaking_degree, robustness_threshold, search_for_minimum_stake(info, robustness_threshold=robustness_threshold, loss_threshold=budget, max_stake_multiplier=10, symmetric_network=info.base_service[1] == info.service_attack_threshold)
 
 
-def build_figure7_stake_graph(name: str, info: RestakingNetworkInfo) -> None:
-    budget = 1
+def build_figure8_stake_graph(filename: str, info: RestakingNetworkInfo, loss_threshold: float) -> None:
     restaking_degrees = [float(rd) for rd in np.arange(1, info.num_services, 0.01)]
-    robustness_thresholds = [float(rt) for rt in np.linspace(0, 1 - 1/info.num_services, info.num_services)]
+
+    service_weights = info.service_attack_reward / info.service_attack_threshold * (1 + np.arange(0, info.num_services, 1))
+    base_service_weight = info.base_service[0] / info.base_service[1]
+    max_weight = service_weights[-1] + base_service_weight
+    all_weights = np.concatenate([np.zeros(1), service_weights, service_weights + base_service_weight])
+    robustness_thresholds = [float(rt) for rt in all_weights[:-1] / max_weight]
 
     results = []
     with ProcessPoolExecutor() as executor:
         futures = [
-            executor.submit(figure7_stake_wrapper, info, restaking_degree, robustness_threshold, budget)
+            executor.submit(figure8_stake_wrapper, info, restaking_degree, robustness_threshold, loss_threshold)
             for robustness_threshold in robustness_thresholds
             for restaking_degree in restaking_degrees
         ]
@@ -696,7 +766,7 @@ def build_figure7_stake_graph(name: str, info: RestakingNetworkInfo) -> None:
         threshold: f"min_stake_threshold_{threshold:.2f}"
         for threshold in robustness_thresholds
     })
-    csv_df.to_csv(f"{results_folder_for_figures}/{name}.csv", index=False)
+    csv_df.to_csv(f"{results_folder_for_figures}/{filename}.csv", index=False)
 
     plt.figure()
     
@@ -710,25 +780,25 @@ def build_figure7_stake_graph(name: str, info: RestakingNetworkInfo) -> None:
     ax.set_xlabel("Restaking Degree")
     ax.set_ylabel("Minimum Stake")
 
-    ax.axhline(y=get_start_max_stake(info, multiplier=2*(1+budget)*info.base_service[0]/info.num_services), color='k', linestyle='--', label="Max Stake")
+    ax.axhline(y=get_start_max_stake(info, multiplier=10), color='k', linestyle='--', label="Max Stake")
 
     ax.grid(color='gray', linewidth=0.5, alpha=0.5)
 
-    plt.savefig(f"{results_folder_for_figures}/{name}.png", dpi=600, bbox_inches='tight')
+    plt.savefig(f"{results_folder_for_figures}/{filename}.png", dpi=600, bbox_inches='tight')
     plt.close()
 
 
-def figure7() -> None:
+def figure8() -> None:
     n=3
-    for base_service in [(10, 1/3), (10, 1/2)]:
-        info = RestakingNetworkInfo(
-            num_validators=n,
-            num_services=n,
-            service_attack_reward=1,
-            service_attack_threshold=1/3,
-            base_service=base_service
-        )
-        build_figure7_stake_graph(f"figure7_y_stake_base_service_{base_service[0]}_{base_service[1]:.2f}", info)
+    info = RestakingNetworkInfo(
+        num_validators=n,
+        num_services=n,
+        service_attack_reward=1,
+        service_attack_threshold=1/3,
+        base_service=(10, 1/2)
+    )
+    for loss_threshold in [0, 1, 2]:
+        build_figure8_stake_graph(f"figure8_y_stake_base_service_{info.base_service[0]}_{info.base_service[1]:.2f}_loss_threshold_{loss_threshold}", info, loss_threshold)
 
 
 if __name__ == "__main__":
@@ -751,3 +821,6 @@ if __name__ == "__main__":
 
     print("Starting figure 7")
     figure7()
+
+    print("Starting figure 8")
+    figure8()
